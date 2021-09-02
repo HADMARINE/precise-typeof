@@ -5,8 +5,22 @@
   "repository": "https://github.com/hadmarine/precise-typeof",
   "author": "HADMARINE <contact@hadmarine.com>",
   "license": "MIT",
+  "scripts": {
+    "build": "gulp build",
+    "test": ""
+  },
   "dependencies": {
     "clear-logger": "^1.0.5"
   },
-  "packageManager": "yarn@3.0.1"
+  "packageManager": "yarn@3.0.1",
+  "devDependencies": {
+    "@types/jest": "^27.0.1",
+    "@types/node": "^16.7.10",
+    "gulp": "^4.0.2",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "jest": "^27.1.0",
+    "merge2": "^1.4.1",
+    "ts-jest": "^27.0.5",
+    "typescript": "^4.4.2"
+  }
 }
