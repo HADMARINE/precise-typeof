@@ -1,0 +1,12 @@
+{
+  "name": "precise-typeof",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "repository": "https://github.com/hadmarine/precise-typeof",
+  "author": "HADMARINE <contact@hadmarine.com>",
+  "license": "MIT",
+  "dependencies": {
+    "clear-logger": "^1.0.5"
+  },
+  "packageManager": "yarn@3.0.1"
+}
