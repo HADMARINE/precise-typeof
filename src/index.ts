@@ -1,6 +1,3 @@
-import _logger from 'clear-logger';
-const logger = _logger.customName('EQB_DATA_VERIFIER');
-
 export class DataVerifierBlueprint<PropertiesType = {}> {
   private __properties__: Partial<PropertiesType>;
 
@@ -56,7 +53,7 @@ function verifier<T>(
 ): T {
   //checking null by logical idea
   if (isNully(data) && !dataVerifier.typeguard(data)) {
-    throw ErrorDictionary.data.parameterNull(key);
+    throw new Error('Parameter is null');
   }
   return dataVerifier.transformer(data, key);
 }
@@ -76,8 +73,7 @@ export function verificationWrapper(globalData: Record<string, any>) {
           // Not Pure processor type
           if (!processor) {
             // Weird thing came inside.
-            logger.debug('Processor is invalid!');
-            process.exit(1);
+            throw new Error('Sub Processor is invalid');
           }
 
           const _result = verifyIterator(processor, data[key], [
@@ -96,8 +92,7 @@ export function verificationWrapper(globalData: Record<string, any>) {
         Object.assign(returnData, { [key]: result });
       });
     } else {
-      logger.debug('Verification Type is Invalid!');
-      process.exit(1);
+      throw new Error('Verification Type is invalid');
     }
     return returnData;
   };
@@ -140,9 +135,9 @@ function ArrayParser<T>(data: any, key: string): T[] {
       logger.debug('String parsed to array, DO NOT USE THIS IN PRODUCTION!');
       return r;
     }
-    throw ErrorDictionary.data.parameterInvalid(key);
+    throw new Error('Parameter ${key} is invalid');
   } catch {
-    throw ErrorDictionary.data.parameterInvalid(key);
+    throw new Error('Parameter ${key} is invalid');
   }
 }
 
@@ -156,7 +151,7 @@ export class StringVerifier
 
   transformer(data: any, key: string): string {
     if (this.typeguard(data) && data) return data;
-    throw ErrorDictionary.data.parameterInvalid(key);
+    throw new Error('Parameter ${key} is invalid');
   }
 }
 export class StringNullVerifier
@@ -172,7 +167,7 @@ export class StringNullVerifier
       return null;
     }
     if (data) if (this.typeguard(data) && data) return data;
-    throw ErrorDictionary.data.parameterInvalid(key);
+    throw new Error('Parameter ${key} is invalid');
   }
 }
 
@@ -203,7 +198,7 @@ export class NumberVerifier
     try {
       return parseFloat(data);
     } catch {
-      throw ErrorDictionary.data.parameterInvalid(key);
+      throw new Error('Parameter ${key} is invalid');
     }
   }
 }
@@ -235,7 +230,7 @@ export class NumberNullVerifier
     try {
       return parseFloat(data);
     } catch {
-      throw ErrorDictionary.data.parameterInvalid(key);
+      throw new Error('Parameter ${key} is invalid');
     }
   }
 }
@@ -277,7 +272,7 @@ export class DateVerifier
     try {
       return new Date(data);
     } catch {
-      throw ErrorDictionary.data.parameterInvalid(key);
+      throw new Error('Parameter ${key} is invalid');
     }
   }
 }
@@ -316,7 +311,7 @@ export class DateNullVerifier
     try {
       return new Date(data);
     } catch {
-      throw ErrorDictionary.data.parameterInvalid(key);
+      throw new Error('Parameter ${key} is invalid');
     }
   }
 }
@@ -347,7 +342,7 @@ export class ObjectVerifier
     if (this.typeguard(data)) return data;
     const record = returnRecord(data);
     if (this.typeguard(record)) return record;
-    throw ErrorDictionary.data.parameterInvalid(key);
+    throw new Error('Parameter ${key} is invalid');
   }
 }
 export class ObjectNullVerifier
@@ -379,7 +374,7 @@ export class ObjectNullVerifier
     if (this.typeguard(data)) return data;
     const record = returnRecord(data);
     if (this.typeguard(record)) return record;
-    throw ErrorDictionary.data.parameterInvalid(key);
+    throw new Error('Parameter ${key} is invalid');
   }
 }
 export class ArrayVerifier<T = any>
@@ -426,16 +421,16 @@ export class ArrayVerifier<T = any>
         data.filter((d) => !this.properties?.valueVerifier?.typeguard(d))
           .length !== 0
       ) {
-        throw ErrorDictionary.data.parameterInvalid(key);
+        throw new Error('Parameter ${key} is invalid');
       }
       return data;
     }
-    throw ErrorDictionary.data.parameterInvalid(key);
+    throw new Error('Parameter ${key} is invalid');
   }
   plainTransformer(data: any, key: string): Array<T> {
     data = ArrayParser(data, key);
     if (this.typeguard(data) && data) return data;
-    throw ErrorDictionary.data.parameterInvalid(key);
+    throw new Error('Parameter ${key} is invalid');
   }
   transformer = this.properties?.valueVerifier
     ? this.arrayVerifyingTransformer
@@ -488,7 +483,7 @@ export class ArrayNullVerifier<T = any>
         data.filter((d) => !this.properties?.valueVerifier?.typeguard(d))
           .length !== 0
       ) {
-        throw ErrorDictionary.data.parameterInvalid(key);
+        throw new Error('Parameter ${key} is invalid');
       }
       return data;
     }
@@ -499,7 +494,7 @@ export class ArrayNullVerifier<T = any>
     }
     data = ArrayParser(data, key);
     if (this.typeguard(data) && data) return data;
-    throw ErrorDictionary.data.parameterInvalid(key);
+    throw new Error('Parameter ${key} is invalid');
   }
   transformer = this.properties?.valueVerifier
     ? this.arrayVerifyingTransformer
@@ -527,10 +522,10 @@ export class BooleanVerifier
         case 'false':
           return false;
         default:
-          throw ErrorDictionary.data.parameterInvalid(key);
+          throw new Error('Parameter ${key} is invalid');
       }
     }
-    throw ErrorDictionary.data.parameterInvalid(key);
+    throw new Error('Parameter ${key} is invalid');
   }
 }
 export class BooleanNullVerifier
@@ -555,10 +550,10 @@ export class BooleanNullVerifier
         case 'false':
           return false;
         default:
-          throw ErrorDictionary.data.parameterInvalid(key);
+          throw new Error('Parameter ${key} is invalid');
       }
     }
-    throw ErrorDictionary.data.parameterInvalid(key);
+    throw new Error('Parameter ${key} is invalid');
   }
 }
 export class NotNullVerifier
@@ -570,7 +565,7 @@ export class NotNullVerifier
   }
   transformer(data: any, key: string): Some {
     if (this.typeguard(data)) return data;
-    throw ErrorDictionary.data.parameterInvalid(key);
+    throw new Error('Parameter ${key} is invalid');
   }
 }
 export class AnyVerifier
@@ -606,7 +601,7 @@ export class FunctionVerifier
     if (this.typeguard(data)) {
       return data;
     }
-    throw ErrorDictionary.data.parameterInvalid(key);
+    throw new Error('Parameter ${key} is invalid');
   }
 }
 export class FunctionNullVerifier
@@ -620,7 +615,7 @@ export class FunctionNullVerifier
     if (this.typeguard(data)) {
       return data;
     }
-    throw ErrorDictionary.data.parameterInvalid(key);
+    throw new Error('Parameter ${key} is invalid');
   }
 }
 const __DataTypes = {
